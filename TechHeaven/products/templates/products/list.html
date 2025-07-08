@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %}Category, Color & Brand List{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row g-4">
+
+    <!-- Categories -->
+    <div class="col-md-4">
+      <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+          <h4 class="card-title text-center mb-3">Categories</h4>
+          <ul class="list-group mb-3">
+            {% for category in categories %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ category.name }}
+                <form method="POST" action="{% url 'delete_category' category.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted text-center">No categories found</li>
+            {% endfor %}
+          </ul>
+          <a href="{% url 'category_add' %}" class="btn btn-sm btn-primary w-100">Add Category</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colors -->
+    <div class="col-md-4">
+      <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+          <h4 class="card-title text-center mb-3">Colors</h4>
+          <ul class="list-group mb-3">
+            {% for color in colors %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ color.name }}
+                <form method="POST" action="{% url 'delete_color' color.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted text-center">No colors found</li>
+            {% endfor %}
+          </ul>
+          <a href="{% url 'color_add' %}" class="btn btn-sm btn-primary w-100">Add Color</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brands -->
+    <div class="col-md-4">
+      <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+          <h4 class="card-title text-center mb-3">Brands</h4>
+          <ul class="list-group mb-3">
+            {% for brand in brands %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ brand.brand_name }}
+                <form method="POST" action="{% url 'delete_brand' brand.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted text-center">No brands found</li>
+            {% endfor %}
+          </ul>
+          <a href="{% url 'add_brand' %}" class="btn btn-sm btn-primary w-100">Add Brand</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

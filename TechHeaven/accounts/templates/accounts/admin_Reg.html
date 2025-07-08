@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}Admin Registration{% endblock %}
+{% block content %}
+  
+  <div class="w-100 h-50 d-flex justify-content-center">
+    
+    <div class="w-sm-100 col-12 col-md-12 col-lg-5  rounded-5 mt-5 p-5 shadow-lg" style="height:600px;">
+      <h3 class="p-2">Admin Registration</h2>
+    <form method="post" >
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+    <div class="mt-4">
+    <p>already have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </div>
+</div>
+  {% if message %}
+    <p class="alert alert-info">{{ message }}</p>
+  {% endif %}
+{% endblock %}

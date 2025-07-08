@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  My Account
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    
+    <!-- Left Column: Orders, Payments, Total -->
+    <div class="col-lg-8">
+      <h2 class="mb-4">Hello, {{ user.email }}</h2>
+
+      <!-- Total Money Spent -->
+      <div class="alert alert-success shadow-sm rounded-pill text-center">
+        <strong>Total Spent:</strong> {{ total_spent }} BDT
+      </div>
+
+      <!-- Orders -->
+      <h4 class="mt-5 mb-3">Your Orders</h4>
+      {% if orders %}
+        {% for order in orders %}
+          <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between">
+              <span><strong>Order #{{ order.id }}</strong></span>
+              <small>{{ order.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+            <div class="card-body">
+              <ul class="list-unstyled mb-2">
+                {% for item in order_items %}
+                  {% if item.order.id == order.id %}
+                    <li>- {{ item.product.name }} ({{ item.quantity }} pcs) — {{ item.price }} BDT</li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+              <div class="text-end text-muted"><small>Total: {{ order.total_amount }} BDT</small></div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="alert alert-warning">You haven’t placed any orders yet.</div>
+      {% endif %}
+
+      <!-- Payment History -->
+      <h4 class="mt-5 mb-3">Payment History</h4>
+      {% if payment_list %}
+        <ul class="list-group shadow-sm">
+          {% for payment in payment_list %}
+            <li class="list-group-item d-flex justify-content-between">
+              <span>{{ payment.payment_method }} — {{ payment.total_amount }} BDT</span>
+              <small>{{ payment.created_at|date:"M d, Y H:i" }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="alert alert-secondary">No payments found.</div>
+      {% endif %}
+    </div>
+
+    <!-- Right Column: Recent Activity -->
+    <div class="col-lg-4">
+      <div class="sticky-top" style="top: 80px;">  <!-- optional sticky sidebar -->
+        <h5 class="mb-3">Recent Activity</h5>
+        {% if activity_logs %}
+          <ul class="list-group shadow-sm">
+            {% for activity in activity_logs %}
+              <li class="list-group-item small">
+                <strong>{{ activity.event }}</strong>: {{ activity.action }}<br>
+                <small class="text-muted">{{ activity.created_at|date:"M d, Y H:i" }}</small>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="alert alert-light">No recent activity found.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

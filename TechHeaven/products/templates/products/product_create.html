@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Create Product{% endblock %}
+
+
+{% block content %}
+
+<div class="w-100 h-50 d-flex justify-content-center">
+<div class="w-100 col-sm-12 col-md-6 col-lg-6   rounded-3 shadow-md mt-2 p-4" style="height:828px;">
+{% if success %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong></strong> {{success}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+
+{% endif %}
+<h3 class="fs-5 fw-bold">Add Product</h1>
+
+<form method="post"enctype="multipart/form-data" >
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" class="btn btn-primary">Create Product</button>
+</form>
+
+
+</div>
+</div>
+
+
+{%endblock%}

@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}Stripe Payment{% endblock %}
+
+{% block content %}
+<div class="d-grid col-lg-6 col-sm-12 col-md-6 w-100 m-2 mt-5 p-5">
+  <h2 class="mb-4 text-center">Stripe Payment</h2>
+
+  <div class="w-100 d-flex justify-content-between mt-2 align-items-center mb-2">
+    <p>For Order ID: {{order.id}}</p>
+    <a href="{% url 'order_cancle' order.id %}" class="btn btn-outline-danger btn-sm">Cancle Order</a>
+  </div>
+  <form id="payment-form">
+    {% csrf_token %}
+    
+    <!-- Stripe Card Element -->
+    <div id="card-element" style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"></div>
+
+    <!-- Stripe Errors -->
+    <div id="card-errors" role="alert" style="color: red; margin-bottom: 10px;"></div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-success">Pay {{ order.total_amount }} BDT</button>
+    
+  </form>
+  {{message}}
+</div>
+
+<!-- Load Stripe -->
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+  // Ensure keys are passed correctly
+  const stripe = Stripe("{{ stripe_public_key|default:'pk_test_missing' }}");
+  const elements = stripe.elements();
+  const card = elements.create("card");
+  card.mount("#card-element");
+
+  const form = document.getElementById("payment-form");
+
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    stripe.confirmCardPayment("{{ client_secret|default:'' }}", {
+      payment_method: {
+        card: card
+      }
+    }).then(function(result) {
+      if (result.error) {
+        document.getElementById("card-errors").textContent = result.error.message;
+      } else {
+        if (result.paymentIntent.status === 'succeeded') {
+          window.location.href = "{% url 'stripe_success' order.id %}";
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

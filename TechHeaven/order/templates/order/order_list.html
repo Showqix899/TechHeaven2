@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+
+{% block title %}
+order list
+{% endblock  %}
+
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+
+      <!-- Header -->
+      <div class="mb-4 text-center">
+        <h3>All Orders</h3>
+        <p class="text-muted">Total Order Amount: <strong>{{ total_order_amount }} BDT</strong></p>
+        <hr>
+      </div>
+
+      <!-- Order List -->
+      {% for order in orders %}
+        <div class="card mb-3 shadow-sm rounded-3">
+          <div class="card-body">
+            <h5 class="card-title">Order ID: {{ order.id }}</h5>
+            <p class="mb-1"><strong>User:</strong> {{ order.user.email }}</p>
+            <p class="mb-1"><strong>Status:</strong> {{ order.status }}</p>
+            <p class="mb-1"><strong>Total:</strong> {{ order.total_amount }} BDT</p>
+            <p class="mb-1"><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+            <p class="mb-0 text-muted"><small>{{ order.created_at }}</small></p>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-center text-muted">No orders found.</p>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

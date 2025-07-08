@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+
+{% block title %}
+    payment succes
+{% endblock  %}
+
+
+{% block content %}
+
+<h1 class="text-center mt-5">Your Payment</h1>
+<div class="w-100 h-50 d-flex justify-content-between align-items-center p-5 mt-5 shadow-sm rounded-5 m-2">
+        <div><p>Successfuly recieved payment for <b>Order ID:</b> #{{order.id}}</p></div>
+        <div><p><b>Amount:</b> {{order.total_amount}} BDT</p></div>
+</div>
+
+{% endblock  %}

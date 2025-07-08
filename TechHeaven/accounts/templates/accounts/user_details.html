@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}
+ user details: {{user.email}}
+{% endblock  %}
+
+{% block content %}
+
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- User Info Card -->
+      <div class="card shadow-sm rounded-4 mb-5">
+        <div class="card-body">
+          <h5 class="card-title">User Details</h5>
+          <hr>
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          <p><strong>User ID:</strong> {{ user.id }}</p>
+        </div>
+      </div>
+
+      <!-- Orders Section -->
+      <div class="card shadow-sm rounded-4 mb-5">
+        <div class="card-body">
+          <h5 class="card-title text-center">Orders</h5>
+          <hr>
+          {% for order in orders %}
+            <div class="mb-3 p-3 border rounded-3 bg-light">
+              <p><strong>Item:</strong> {{ order.product.name|truncatewords:10 }}</p>
+              <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+              <p><strong>Price:</strong> {{ order.price_at_order }}</p>
+              <p><strong>Status:</strong> {{ order.status }}</p>
+              <p><strong>Date:</strong> {{ order.created_at }}</p>
+            </div>
+          {% empty %}
+            <p class="text-muted text-center">No orders found.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Payments Section -->
+      <div class="card shadow-sm rounded-4">
+        <div class="card-body">
+          <h5 class="card-title text-center">Payments</h5>
+          <hr>
+          {% for payment in payment_list %}
+            <div class="mb-3 p-3 border rounded-3 bg-light">
+              <p><strong>Method:</strong> {{ payment.method }}</p>
+              <p><strong>Total Amount:</strong> {{ payment.total_amount }}</p>
+              <p><strong>Status:</strong> {{ payment.status }}</p>
+              <p><strong>Date:</strong> {{ payment.created_at }}</p>
+            </div>
+          {% empty %}
+            <p class="text-muted text-center">No payments found.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+{% endblock  %}

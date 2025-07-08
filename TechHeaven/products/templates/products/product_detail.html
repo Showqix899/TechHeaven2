@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Product Detail -{{query}}
+{% endblock %}
+
+{% block content %}
+<div class="card w-100  d-flex justify-content-center align-items-center mt-1 p-5" style="border:none;">
+  {% if not product.image %}
+     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png" alt="no img">
+  {% else %}
+  <img src="{{product.image.url}}" class="card-img-top img-fluid" alt="img not found" style="height: 300px; width: 400px; object-fit: cover;">
+  {% endif %}
+  <div class="card-body d-flex flex-column justify-content-center align-items-left w-100">
+    <h5 class="card-title">{{product.name}}</h5>
+    <p class="card-text">{{product.description}}</p>
+    {% if product.discount %}
+          <p class="card-text text-success"><b>Discount:</b> {{product.discount}}%</p>
+          <p class="card-text"> <b>Price: </b><s>{{product.prev_price}} bdt </s> now only  {{product.price}} bdt </p>
+    {% else %}
+    <p class="card-text"><b>Price:</b> ${{product.price}}</p>
+
+    {% endif %}
+    <p class="card-text"><b>Category:</b> {{product.category.name}}</p>
+    <p class="card-text"><b>Colors: </b>{% for color in product.colors.all %}
+      {{color.name}}{% if not forloop.last %}, {% endif %}
+      {% endfor %}</p>
+
+    
+    <p class="card-text"><b>stock: </b>{{product.stock}}</p>
+    {% if product.brand %}
+        <p>Brand: {{product.brand.name}}</p>
+
+    {% endif %}
+    <p class="card-text"><small class="text-body-secondary">{{product.updated_at}}</small></p>
+    {% if user.is_authenticated %}
+    {% if product %}
+    <form method="post" action="{% url 'add_to_cart' product.id %}" onkeydown="return event.key != 'Enter';">
+       {% csrf_token %}
+      {{ add_to_cart_form.as_p }}
+      <button type="submit" class="btn btn-success">Add to Cart</button>
+    </form>
+    {% endif %}
+    {% endif %}
+      <a href="{% url 'product_list'%}" class="btn btn-secondary mt-2" style="height: 40px; width:90px;">Go Back</a>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  View Cart
+{% endblock %}
+
+{% block content %}
+  <div class="w-100 mt-4 d-flex flex-column justify-content-center align-items-center gap-4">
+    {% if cart.items.all %}
+
+      <div class="w-100 d-flex justify-content-between align-items-center p-2">
+        <div>
+            <h4 class="text-center fs-4">Your Cart</h2>
+        </div>
+        <div>
+        <h4 class="fs-5"><b>Total Amount :</b>{{ cart.total_price }}</h3>
+        </div>
+        <div>
+          {% if bol %}
+          <a href="{% url 'all_item_select'%}" class="btn btn-secondary">All Selected</a>
+          {% else %}
+          <a href="{% url 'all_item_select'%}" class="btn btn-outline-secondary">Select All</a>
+          {% endif %}
+        </div>
+      </div>
+      {% for item in cart.items.all %}
+      
+    
+        <div class="w-100 d-flex justify-content-between align-items-center">
+          <div class="card">
+            <div>
+              {% if not item.product.image %}
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png" alt="no img" class="img-fluid" />
+              {% else %}
+                <img src="{{ item.product.image.url }}" class="card-img-top img-fluid" alt="img not found" style="height: 300px; width: 400px; object-fit: cover;" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <p class="card-title fw-bold">{{ item.product.name }}</p>
+            <p class="card-text">
+              <b>Price:</b> {{ item.product.price }} bdt
+            </p>
+            {% comment %} <p class="card-text">
+              <b>Quantity:</b> {{ item.quantity }}
+            </p> {% endcomment %}
+            <div class="w-100 d-flex justify-content-between">
+              <form method="post" action="{% url 'update_cart_item' item.id %}" class="mt-2">
+              {% csrf_token %}
+              <label for="">quantity:</label><input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control mb-2" style="width: 100px;" />
+              <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
+            </form>
+            <form action="{% url 'toggle_item_selection' item.id %}" method="post">
+                  {% csrf_token %}
+                      <button type="submit" class="btn btn {% if item.is_selected %}btn-success{% else %}btn-outline-danger{% endif %}">
+                          {% if item.is_selected %}selected{% else %}select{% endif %}
+                      </button>
+              </form>
+            </div>
+            <p class="card-text">
+              <b>Total:</b> {{ item.total_price }} bdt
+            </p>
+
+            <p class="card-text">
+              <b>Added on:</b> {{ item.created_at }}
+            </p>
+            <div class="w-100 d-flex">
+              <a href="{% url 'remove_cart_item' item.id %}" class="btn btn-outline-danger">remove</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+      <div class="w-100 p-5 d-flex justify-content-center">
+        <a href="{% url 'place_order' %}" class="btn btn-outline-success">place order</a>
+      </div>
+    {% else %}
+      <p>Your cart is empty.</p>
+    {% endif %}
+  </div>
+{% endblock %}

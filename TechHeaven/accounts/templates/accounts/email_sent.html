@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+{% block title %}Email Sent{% endblock %}
+{% block content %}
+
+
+
+
+<div class="col-12 col-lg-6 bg-light p-5 shadow-lg rounded-5 mt-5 row justify-content-center">
+    <h2 class="fs-3 fw-bold mb-3 w-100 row justify-content-center">Email Sent</h2>
+    <p class="text-center">An email has been sent to {{ email }}. Please check your inbox.</p>
+    <p class="text-center">If you don't see it, please check your spam folder.</p>
+    <div class="text-center mt-4">
+        <a href="{% url 'login' %}" class="btn btn-primary">Go to Login</a>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+{% comment %} <p>An email has been sent to {{ email }}. Please check your inbox.</p> {% endcomment %}
+{% endblock %}

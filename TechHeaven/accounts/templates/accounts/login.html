@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="w-sm-100  row justify-content-center">
+<div class="mt-5 p-5 shadow-lg rounded-5"  style="height:500px; width:500px;">
+    <h2 class="fs-3 fw-bold mb-3 w-100 row justify-content-center">Log in</h2>
+    <form method="post" class="mt-2">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" class="btn btn-primary">Log In</button>
+    </form>
+    <div class="mt-4">
+    <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+    <p>Forgot your password? <a href="{% url 'password_reset_request' %}">Reset it</a></p>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+

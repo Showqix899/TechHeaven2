@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% block title %}admin invaitation Sent{% endblock %}
+{% block content %}
+      <div class="w-sm-100 row justify-content-center" s">
+        <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" class="btn btn-primary">Send Invitation</button>
+      </form>
+      </div>
+{% endblock %}
