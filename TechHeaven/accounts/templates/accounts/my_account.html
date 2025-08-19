@@ -16,31 +16,7 @@
       <div class="alert alert-success shadow-sm rounded-pill text-center">
         <strong>Total Spent:</strong> {{ total_spent }} BDT
       </div>
-
-      <!-- Orders -->
-      <h4 class="mt-5 mb-3">Your Orders</h4>
-      {% if orders %}
-        {% for order in orders %}
-          <div class="card mb-3 shadow-sm">
-            <div class="card-header bg-light d-flex justify-content-between">
-              <span><strong>Order #{{ order.id }}</strong></span>
-              <small>{{ order.created_at|date:"M d, Y H:i" }}</small>
-            </div>
-            <div class="card-body">
-              <ul class="list-unstyled mb-2">
-                {% for item in order_items %}
-                  {% if item.order.id == order.id %}
-                    <li>- {{ item.product.name }} ({{ item.quantity }} pcs) — {{ item.price }} BDT</li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-              <div class="text-end text-muted"><small>Total: {{ order.total_amount }} BDT</small></div>
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <div class="alert alert-warning">You haven’t placed any orders yet.</div>
-      {% endif %}
+      
 
       <!-- Payment History -->
       <h4 class="mt-5 mb-3">Payment History</h4>

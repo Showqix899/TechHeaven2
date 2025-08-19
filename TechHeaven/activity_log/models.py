@@ -9,6 +9,7 @@ User=get_user_model()
 class ActivityLog(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     event=models.CharField(max_length=30,null=True,blank=True)
     action=models.CharField(max_length=30,null=tuple,blank=True)
     payload=models.JSONField(null=True,blank=True)

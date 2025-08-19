@@ -8,41 +8,52 @@ from .models import Product,Category, Color, Brand
 class ProductForm(ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description','brand_name' ,'price', 'stock', 'discount', 'image', 'category','colors']
+        fields = [
+            'name', 'description', 'brand_name', 'price', 'stock',
+            'discount', 'image', 'category', 'colors'
+        ]
         widgets = {
             'description': Textarea(attrs={'rows': 4, 'cols': 40})
         }
 
-        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.widget.attrs.update({
-                'class': 'form-control'
-            })
+            field.widget.attrs.update({'class': 'form-control'})
 
+    def clean_discount(self):
+        discount = self.cleaned_data.get('discount')
+        if discount and discount < 0:
+            raise forms.ValidationError("Discount cannot be negative.")
+        if discount and discount > 100:
+            raise forms.ValidationError("Discount cannot exceed 100%.")
+        return discount
 
-    def clean(self):
+    def save(self, commit=True):
+        product = super().save(commit=False)
 
-        cleaned_data= super().clean()
-        price = cleaned_data.get('price')
-        discount = cleaned_data.get('discount')
+        # If discount applied
+        if product.discount and product.discount > 0:
+            # Store old price only if this is a new discount
+            if not product.prev_price or product.prev_price == product.price:
+                product.prev_price = product.price
 
+            # Calculate discounted price
+            product.price = product.prev_price - (
+                product.prev_price * (product.discount / 100)
+            )
+        else:
+            # If discount removed, restore original price
+            if product.prev_price:
+                product.price = product.prev_price
+                product.prev_price = None
 
-        if discount and price:
+        if commit:
+            product.save()
+            self.save_m2m()
 
-            cleaned_data['prev_price'] = price
+        return product
 
-            discounted_price = price - (price * (discount / 100))
-
-            if discounted_price < 0:
-                raise forms.ValidationError("Discounted price cannot be negative.")
-            
-            cleaned_data['price'] = discounted_price
-
-
-        return cleaned_data
-    
 
 
 class CategoryForm(ModelForm):

@@ -1,21 +1,22 @@
-{% extends "layout.html" %}
-{% block title %}Update Product{% endblock %}
-
+{% extends 'layout.html' %}
+{% block title %}
+  Update Product
+{% endblock %}
 
 {% block content %}
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm rounded-4 p-4">
+          <h2 class="h5 mb-4 text-center fw-semibold">Update Product</h2>
 
-<div class="w-100 h-50 d-flex justify-content-center">
-<div class="w-100 col-sm-12 col-md-6 col-lg-6   rounded-3 shadow-md mt-2 p-4" style="height:828px;">
-<h3 class="fs-5 fw-bold">Update Product</h1>
-
-<form method="post" >
-    {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit" class="btn btn-denger">Update</button>
-</form>
-
-</div>
-</div>
-
-
-{%endblock%}
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

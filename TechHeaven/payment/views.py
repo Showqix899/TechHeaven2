@@ -131,28 +131,41 @@ def stripe_cancel(request):
     return render(request, 'payments/cancel.html')
 
 
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 
+
+
+# List all payments for admin
 @login_required
-#order list
 def payment_list(request):
+    if request.user.role != "ADMIN":
+        return HttpResponse("Need to be an Admin. You are not allowed")
 
-    if not request.user.role == "ADMIN":
-        return HttpResponse("need to be an Admin. You are not allowed")
+    # Calculate total sell amount by looping, like you had before
+
+    query = request.GET.get('query', '').strip()
+
+    if query:
+        # Filter payment history based on user email
+        payment_list = PaymentHistory.objects.filter(user__email__icontains=query).order_by('-created_at')
+    else:
+        # Fetch all payment history records
+        payment_list = PaymentHistory.objects.all().order_by('-created_at')
+
     
-    total_sell_amount=0
-    try:
+    total_sell_amount = 0
+    for item in payment_list:
+        total_sell_amount += item.total_amount
 
-        payment_list=PaymentHistory.objects.all().order_by('-created_at')
+    # Pagination: always 5 per page
+    paginator = Paginator(payment_list, 5)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
-        for item in payment_list:
-
-            total_sell_amount+=item.total_amount
-
-        return render (request,'payment/payment_list.html',{
-            'total_order_amount':total_sell_amount,
-            'orders_item':payment_list
-
-        })
-    except PaymentHistory.DoesNotExist:
-
-        return render(request,'accounts/error_message.html',{'message':'404 Nothing'})
+    return render(request, 'payment/payment_list.html', {
+        'total_order_amount': total_sell_amount,
+        'orders_item': page_obj,  # paginated items
+        'paginator': paginator,
+        'page_obj': page_obj,
+    })

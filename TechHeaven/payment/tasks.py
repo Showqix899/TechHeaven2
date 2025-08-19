@@ -24,14 +24,21 @@ def send_payment_confirmation_email(order_id, cart_id, user_email):
                 f"- Total Price: {item.total_price()} BDT\n"
             )
 
-        message += f"\nTotal Amount: {order.total_amount} BDT"
+        message += f"\nTotal Amount: {order.total_amount} BDT at address {str(order.shipping_address)}\n"
 
     except Exception as e:
         message = str(e)
         subject = "Stripe Payment Failed"
 
     # ✅ Make sure recipient email is in a list
+
     send_mail(subject, message, settings.EMAIL_HOST_USER, [user_email])
+    
+    if order.shipping_address:
+        print(f'Shipping Address: {order.shipping_address} ')
+    else:
+        print("No shipping address provided for the order.")
+    
 
 
 @shared_task

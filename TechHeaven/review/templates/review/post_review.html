@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}Post Review{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); background: #fff;">
+    
+    <!-- Product Info -->
+    <div style="text-align: center; margin-bottom: 15px;">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100px; border-radius: 8px; margin-bottom: 10px;">
+        {% endif %}
+        <h2 style="margin-bottom: 5px;">{{ product.name }}</h2>
+        {% if product.price %}
+            <p style="color: #888; font-size: 14px;">${{ product.price }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Review Form -->
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div style="margin-bottom: 12px;">
+                {{ field.label_tag }}  
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: red; font-size: 12px;">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" style="width: 100%; padding: 10px; background: linear-gradient(90deg, #4CAF50, #45a049); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">
+            Submit Review
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -7,37 +7,64 @@ from django.http import HttpResponse
 from cart.forms import AddToCartForm
 from django.core.cache import cache
 from .models import Brand
+from .tasks import product_cache_update
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from review.models import ProductReview
+from django.db.models import Avg, Count
+
+
 
 
 # Create your views here.
 
 #product list view
 def product_list(request):
-    
-    categories = Category.objects.all()
-    brands = Brand.objects.all()
+    categories = cache.get('categories')
+    brands = cache.get('brands')
+
+    if not categories:
+        categories = Category.objects.all()
+        cache.set('categories', categories, timeout=60*5)  # cache for 5 minutes
+
+    if not brands:
+        brands = Brand.objects.all()
+        cache.set('brands', brands, timeout=60*5)
 
     selected_category = request.GET.get('category')
     selected_brand = request.GET.get('brand')
 
-    # ✅ Start with all products first!
-    products = Product.objects.all().order_by('-created_at')
+    # Cache products with filter parameters as key
+    cache_key = f"products_{selected_category}_{selected_brand}"
+    products = cache.get(cache_key)
 
-    if selected_category:
-        products = products.filter(category_id=selected_category)
+    if not products:
+        products = Product.objects.all().order_by('-created_at')
+        if selected_category:
+            products = products.filter(category_id=selected_category)
+        if selected_brand:
+            products = products.filter(brand_name_id=selected_brand)
+        cache.set(cache_key, products, timeout=60*2)  # cache for 2 minutes
+    
+    
+    products = Product.objects.annotate(
+        avg_rating=Avg('reviews__rating'),  # Average of all related reviews' ratings
+        total_reviews=Count('reviews')      # Total number of related reviews
+    )
 
-    if selected_brand:
-        products = products.filter(brand_name_id=selected_brand)
+    paginator = Paginator(products, 8)  # 5 products per page
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'products/product_list.html', {
-        'products': products,
+        'products': page_obj,
         'categories': categories,
         'brands': brands,
         'selected_category': selected_category,
         'selected_brand': selected_brand,
+        'paginator': paginator,
+        'page_obj': page_obj
     })
-    
-
 
 #product search view
 def product_search(request):
@@ -74,7 +101,13 @@ def product_detail(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
         add_to_cart_form = AddToCartForm(initial={'quantity': 1})  # Initialize form with default quantity
-        return render(request, 'products/product_detail.html', {'product': product, 'add_to_cart_form': add_to_cart_form})
+
+
+        product_reviews = ProductReview.objects.filter(product=product).order_by('-created_at')
+
+        
+        
+        return render(request, 'products/product_detail.html', {'product': product, 'add_to_cart_form': add_to_cart_form, 'product_reviews': product_reviews})
     except Product.DoesNotExist:
         return render(request, 'products/product_detail.html', {'error': 'Product not found.'})
     
@@ -107,33 +140,25 @@ def product_create(request):
 # product update view
 @admin_required
 def product_update(request, product_id):
-    
     try:
         product = Product.objects.get(id=product_id)
-        if request.method == 'POST':
-            form = ProductForm(request.POST, request.FILES, instance=product)
-            if form.is_valid():
-                updated_product = form.save(commit=False)
-
-                # Manually set prev_price if discount was applied
-                prev_price = form.cleaned_data.get('prev_price')
-                if prev_price:
-                    updated_product.prev_price = prev_price
-
-                updated_product.save()
-                form.save_m2m()
-
-                return render(request, 'products/product_update.html', {
-                    'form': form,
-                    'success': 'Product updated successfully!'
-                })
-        else:
-            form = ProductForm(instance=product)
-
-        return render(request, 'products/product_update.html', {'form': form})
-
     except Product.DoesNotExist:
         return render(request, 'products/product_update.html', {'error': 'Product not found.'})
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()  # The form handles all price/discount logic
+            product_cache_update.delay()
+            return render(request, 'products/product_update.html', {
+                'form': ProductForm(instance=product),
+                'success': 'Product updated successfully!'
+            })
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, 'products/product_update.html', {'form': form})
+
 
 
 # product delete view

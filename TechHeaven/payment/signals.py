@@ -10,7 +10,7 @@ from .models import PaymentHistory
 
 # Activity log for product creation and update
 @receiver(post_save, sender=PaymentHistory)
-def log_product_save(sender, instance, created, **kwargs):
+def payment_log(sender, instance, created, **kwargs):
     user = get_current_user()
     email = user.email if user else "Anonymous"
 
@@ -18,6 +18,7 @@ def log_product_save(sender, instance, created, **kwargs):
     event = f"payment recieved by {user.email}"
 
     ActivityLog.objects.create(
+        user=user,
         event=event,
         action=action,
         payload={
@@ -29,11 +30,12 @@ def log_product_save(sender, instance, created, **kwargs):
 
 # Activity log for product delete
 @receiver(post_delete, sender=PaymentHistory)
-def log_product_delete(sender, instance, **kwargs):
+def payment_log_delete(sender, instance, **kwargs):
     user = get_current_user()
     email = user.email if user else "Anonymous"
 
     ActivityLog.objects.create(
+        user=user,
         event=f"payment deleted by {email}",
         action="Payment deletion",
         payload={

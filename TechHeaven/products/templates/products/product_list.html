@@ -1,8 +1,5 @@
 {% extends 'layout.html' %}
-
-{% block title %}
-  Product List
-{% endblock %}
+{% block title %}Product List{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -12,7 +9,9 @@
       <select name="category" class="form-select">
         <option value="">All Categories</option>
         {% for cat in categories %}
-          <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+          <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+            {{ cat.name }}
+          </option>
         {% endfor %}
       </select>
     </div>
@@ -20,7 +19,9 @@
       <select name="brand" class="form-select">
         <option value="">All Brands</option>
         {% for brand in brands %}
-          <option value="{{ brand.id }}" {% if selected_brand == brand.id|stringformat:"s" %}selected{% endif %}>{{ brand.brand_name }}</option>
+          <option value="{{ brand.id }}" {% if selected_brand == brand.id|stringformat:"s" %}selected{% endif %}>
+            {{ brand.brand_name }}
+          </option>
         {% endfor %}
       </select>
     </div>
@@ -35,17 +36,18 @@
       <div class="col-sm-6 col-md-4 col-lg-3">
         <div class="card h-100 shadow-sm border-0">
           {% if product.image %}
-            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="object-fit: cover; height: 200px;" />
+            <img src="{{ product.image.url }}" class="card-img-top" style="object-fit: cover; height: 200px;" />
           {% endif %}
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ product.name }}</h5>
+            <p>Average Rating: {{ product.avg_rating|default:"0" }} / 5</p>
+            <p>Total Reviews: {{ product.total_reviews }}</p>
             {% if product.discount %}
               <p class="text-success mb-1"><strong>Discount:</strong> {{ product.discount }}%</p>
               <p class="mb-1"><s>{{ product.prev_price }} BDT</s> <strong>{{ product.price }} BDT</strong></p>
             {% else %}
               <p class="mb-1"><strong>Price:</strong> {{ product.price }} BDT</p>
             {% endif %}
-
             <div class="mt-auto d-flex gap-2">
               <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-outline-primary w-100">Details</a>
               {% if user.role == "ADMIN" %}
@@ -58,11 +60,31 @@
       </div>
     {% empty %}
       <div class="col-12">
-        <div class="alert alert-warning text-center" role="alert">
-          No products found.
-        </div>
+        <div class="alert alert-warning text-center">No products found.</div>
       </div>
     {% endfor %}
   </div>
+
+  <!-- Pagination -->
+  {% if paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% for num in paginator.page_range %}
+          {% if num == page_obj.number %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 </div>
 {% endblock %}

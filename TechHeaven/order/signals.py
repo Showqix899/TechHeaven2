@@ -15,9 +15,10 @@ def log_product_save(sender, instance, created, **kwargs):
     email = user.email if user else "Anonymous"
 
     action = "order creation" if created else "order updation"
-    event = f"placubg a an ordere"
+    event = f"placed order by {email}"
 
     ActivityLog.objects.create(
+        user=user,
         event=event,
         action=action,
         payload={
@@ -34,6 +35,7 @@ def log_product_delete(sender, instance, **kwargs):
     email = user.email if user else "Anonymous"
 
     ActivityLog.objects.create(
+        user=user,
         event=f"order deleted by {email}",
         action="product deletion",
         payload={

@@ -1,38 +1,87 @@
 {% extends "layout.html" %}
 
-
-{% block title %}
-order list
-{% endblock  %}
-
+{% block title %}Order List{% endblock %}
 
 {% block content %}
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-lg-10">
+    <div class="col-lg-10 mt-2 mb-2">
+      <form class="d-flex" role="search" method="GET" action="{% url 'order_list' %}">
+            {% csrf_token %}
+            <input class="form-control me-2" type="search" placeholder="Search By Email" aria-label="Search" value="{{ query }}" name="query"/>
+            <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
 
       <!-- Header -->
       <div class="mb-4 text-center">
         <h3>All Orders</h3>
-        <p class="text-muted">Total Order Amount: <strong>{{ total_order_amount }} BDT</strong></p>
+        <p class="text-muted">
+          Total Order Amount: <strong>{{ total_order_amount }} BDT</strong>
+        </p>
         <hr>
       </div>
 
       <!-- Order List -->
-      {% for order in orders %}
-        <div class="card mb-3 shadow-sm rounded-3">
-          <div class="card-body">
-            <h5 class="card-title">Order ID: {{ order.id }}</h5>
-            <p class="mb-1"><strong>User:</strong> {{ order.user.email }}</p>
-            <p class="mb-1"><strong>Status:</strong> {{ order.status }}</p>
-            <p class="mb-1"><strong>Total:</strong> {{ order.total_amount }} BDT</p>
-            <p class="mb-1"><strong>Payment Method:</strong> {{ order.payment_method }}</p>
-            <p class="mb-0 text-muted"><small>{{ order.created_at }}</small></p>
+      <div id="order-list">
+        {% for order in orders %}
+          <div class="card mb-3 shadow-sm rounded-3">
+            <div class="card-body">
+              <h5 class="card-title">Order ID: {{ order.id }}</h5>
+              <p class="mb-1"><strong>User:</strong> {{ order.user.email }}</p>
+              <p class="mb-1"><strong>Status:</strong> {{ order.status }}</p>
+              <p class="mb-1"><strong>Total:</strong> {{ order.total_amount }} BDT</p>
+              <p class="mb-1"><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+              <p class="mb-0 text-muted"><small>{{ order.created_at }}</small></p>
+            </div>
           </div>
-        </div>
-      {% empty %}
-        <p class="text-center text-muted">No orders found.</p>
-      {% endfor %}
+        {% empty %}
+          <p class="text-center text-muted">No orders found.</p>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination Controls -->
+      {% if paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">&laquo;</span>
+            </li>
+          {% endif %}
+
+          {% for num in paginator.page_range %}
+            {% if num == page_obj.number %}
+              <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ num }}</span>
+              </li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">&raquo;</span>
+            </li>
+          {% endif %}
+
+        </ul>
+      </nav>
+      {% endif %}
 
     </div>
   </div>

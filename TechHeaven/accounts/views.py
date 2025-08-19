@@ -21,9 +21,13 @@ from django.contrib.auth.decorators import login_required
 from order.models import Order,OrderItem
 from payment.models import PaymentHistory
 from activity_log.models import ActivityLog
+from userprofile.task import user_profile_creation
 
 
 User = get_user_model()#get user model
+
+
+
 
 #sign up view
 def signup_view(request):
@@ -41,6 +45,12 @@ def signup_view(request):
             message = f'Hi {user.email}, click here to activate your account: {activation_link}'
             email_send.delay('Activate your account', message, settings.EMAIL_HOST_USER, [user.email])
             print(f"Activation link: {activation_link}")  # Debugging line
+
+            if user.id:
+                # Create user profile asynchronously
+                user_profile_creation.delay(user.id)  # Call the task to create user profile
+            else:
+                print("User ID is not available, profile creation task not called.")
 
             return render(request, 'accounts/email_sent.html', {'email': user.email})
         else:
@@ -140,8 +150,8 @@ from django.contrib.sites.shortcuts import get_current_site
 #Admin invitation view 
 def admin_invitation_generator(request):
 
-    if not request.user.role == "ADMIN":
-        return HttpResponse("need to be an Admin. You are not allowed")
+    # if not request.user.role == "ADMIN":
+    #     return HttpResponse("need to be an Admin. You are not allowed")
     
     form = AdminInvitationForm(request.POST)
 
@@ -314,31 +324,27 @@ def update_user(request, user_id):
 
     return render(request, 'accounts/user_update.html', {'form': form})
 
+
+
+
 @login_required
 def my_account(request, user_id):
     user = get_object_or_404(User, id=user_id)
     total_spent=0
 
-    # Fetch all orders for the user
-    orders = Order.objects.filter(user=user)
-
-    for order in orders:
-
-        total_spent+=order.total_amount
-
-    # Gather all items from each order
-    order_items = OrderItem.objects.filter(order__in=orders)
 
     # Fetch payment history for the user
     payment_list = PaymentHistory.objects.filter(user=user)
 
+    for payment in payment_list:
+        total_spent += payment.total_amount
+    
+
     # Fetch recent activity logs (limit to recent 20 for example)
-    activity_logs = ActivityLog.objects.filter(payload__user_id=str(user.id)).order_by('-created_at')[:20]
+    activity_logs = ActivityLog.objects.filter(user=user).order_by('-created_at')[:5]
 
     return render(request, 'accounts/my_account.html', {
         'user': user,
-        'orders': orders,
-        'order_items': order_items,
         'payment_list': payment_list,
         'activity_logs': activity_logs,
         'total_spent':total_spent

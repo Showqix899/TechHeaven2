@@ -2,14 +2,24 @@
 <html>
   <head>
     <title>
-      {% block title %}
-        MySite
-      {% endblock %}
+      {% block title %} MySite {% endblock %}
     </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <style>
-      html, body {
+      html,
+      body {
         height: 100%;
         margin: 0;
       }
@@ -20,97 +30,151 @@
       }
       .container-lg {
         flex: 1;
+        margin-top: 80px; /* Prevent content from hiding behind sticky navbar */
       }
       footer {
         margin-top: auto;
       }
+      /* Minimal navbar styling */
+      .navbar {
+        background-color: #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        padding: 0.5rem 1rem;
+      }
+      .navbar-brand {
+        font-weight: bold;
+        font-size: 1.3rem;
+        color: #0d6efd !important;
+      }
+      .nav-link {
+        color: #555 !important;
+        font-weight: 500;
+        transition: color 0.2s ease-in-out;
+      }
+      .nav-link:hover {
+        color: #0d6efd !important;
+      }
+      .navbar .btn {
+        font-size: 0.9rem;
+      }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
       <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'product_list' %}">TechHaven</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
             {% if user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'logout'%}">log out</a>
+                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
               </li>
             {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'signup'%}">sign Up</a>
+                <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
               </li>
-
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'login'%}">log in</a>
+                <a class="nav-link" href="{% url 'login' %}">Log In</a>
               </li>
             {% endif %}
-            
+
             {% if user.role == "ADMIN" %}
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Admin Panel
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Admin
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'admin_invite'%}">Admin Invite</a></li>
-                  <li><a class="dropdown-item" href="{% url 'product_create'%}">Add Product</a></li>
-                  <li><a class="dropdown-item" href="{% url 'list_categories_and_colors'%}">list of categories and colors</a></li>
-                  <li><a class="dropdown-item" href="{% url 'user_list'%}">User List</a></li>
-                  <li><a class="dropdown-item" href="{% url 'order_list'%}">Order List</a></li>
-                  <li><a class="dropdown-item" href="{% url 'payment_list'%}">Payment List</a></li>              
+                  <li><a class="dropdown-item" href="{% url 'admin_invite' %}">Admin Invite</a></li>
+                  <li><a class="dropdown-item" href="{% url 'product_create' %}">Add Product</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list_categories_and_colors' %}">Categories & Colors</a></li>
+                  <li><a class="dropdown-item" href="{% url 'user_list' %}">User List</a></li>
+                  <li><a class="dropdown-item" href="{% url 'order_list' %}">Order List</a></li>
+                  <li><a class="dropdown-item" href="{% url 'payment_list' %}">Payment List</a></li>
                 </ul>
               </li>
             {% endif %}
+
             {% if user.is_authenticated %}
-              <a href="{% url 'my_account' user.id%}" class="btn">My Account</a>
+              <li class="nav-item">
+                <a href="{% url 'my_account' user.id %}" class="nav-link">Your Logs</a>
+              </li>
             {% endif %}
-            <li class="nav-item">
-              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-            </li>
           </ul>
-          <form class="d-flex" role="search" method="GET" action="{% url 'search' %}">
+
+          <!-- Search -->
+          <form class="d-flex me-3" role="search" method="GET" action="{% url 'search' %}">
             {% csrf_token %}
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{{ q }}" name="q"/>
-            <button class="btn btn-outline-success" type="submit">Search</button>
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+              value="{{ q }}"
+              name="q"
+            />
+            <button class="btn btn-outline-primary" type="submit">Search</button>
           </form>
-          <a href="{% url 'view_cart'%}" class="btn"><i class="fa-solid fa-cart-shopping p-1"></i>Cart</a>
+
+          <!-- Icons -->
+          <a href="{% url 'view_cart' %}" class="btn me-2">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </a>
+          <a class="btn" href="{% url 'profile_detail' %}">
+            <i class="fa-solid fa-user"></i>
+          </a>
         </div>
       </div>
     </nav>
 
+    <!-- Main Content -->
     <div class="container-lg">
       <div class="row justify-content-center">
         {% block content %}
-          <!-- Content will be injected here -->
         {% endblock %}
       </div>
     </div>
-    
-    {% if user.is_authenticated %}
-    <footer class="bg-dark text-light py-4 mt-5">
-      <div class="container">
-        <div class="row">
-          <!-- Company Info -->
-          <div class="col-md-6">
-            <h5>TechHeaven Ltd.</h5>
-            <p class="mb-1">1234 Byte Street, Silicon Valley, CA 94043</p>
-            <p class="mb-0">Email: showqi@techheaven.com</p>
-          </div>
 
-          <!-- Random Message / Slogan -->
-          <div class="col-md-6 text-md-end mt-3 mt-md-0">
-            <p class="fst-italic">"Innovation is just a bug fix away."</p>
-            <small>&copy; {{ now|date:"Y" }} TechHeaven Ltd. All rights reserved.</small>
+    {% if user.is_authenticated %}
+      <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6">
+              <h5>TechHeaven Ltd.</h5>
+              <p class="mb-1">1234 Byte Street, Silicon Valley, CA 94043</p>
+              <p class="mb-0">Email: showqi@techheaven.com</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+              <p class="fst-italic">"Innovation is just a bug fix away."</p>
+              <small>&copy; {{ now|date:"Y" }} TechHeaven Ltd. All rights reserved.</small>
+            </div>
           </div>
         </div>
-      </div>
-    </footer>   
+      </footer>
     {% endif %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

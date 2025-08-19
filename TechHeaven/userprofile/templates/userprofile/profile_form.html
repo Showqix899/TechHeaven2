@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    <h2 class="mb-4 text-center">Update Profile</h2>
+    
+    <form method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm bg-light">
+        {% csrf_token %}
+        
+        <!-- Show profile picture preview -->
+        {% if user.profile.profile_picture %}
+            <div class="text-center mb-3">
+                <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" 
+                     class="rounded-circle img-thumbnail" style="width:120px; height:120px; object-fit:cover;">
+            </div>
+        {% endif %}
+
+        <!-- Render form fields -->
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

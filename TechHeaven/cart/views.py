@@ -5,6 +5,7 @@ from products.models import Product
 from .forms import AddToCartForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404,redirect
+from django.core import cache
 
 # Create your views here.
 
@@ -24,6 +25,10 @@ def add_to_cart(request,product_id):
 
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    
+    
+    
     
     product=get_object_or_404(Product, id=product_id)
 
